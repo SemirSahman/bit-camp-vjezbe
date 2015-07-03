@@ -1,3 +1,49 @@
+package ba.bitcamp.week7.day4.snake;
+
+import java.awt.Color;
+
+public class Point {
+
+	private int x;
+	private int y;
+
+	public Point(int x, int y) {
+		this.x = x;
+		this.y = y;
+
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package ba.bitcamp.week7.day4.snake;
 
@@ -21,17 +67,25 @@ public class Snake extends JFrame {
 	private static final long serialVersionUID = -8753185824210866132L;
 
 	private JPanel p1 = new JPanel();
-	private JLabel[][] fields = new JLabel[10][10];
+	private int length = 3;
+	private Point[] points = new Point[length];
+	private int fieldSize = 15;
+	private JLabel[][] fields = new JLabel[fieldSize][fieldSize];
 	private int x = 5;
 	private int y = 5;
 	private int deltaX = 1;
 	private int deltaY = 0;
+	private int foodX;
+	private int foodY;
 
 	public Snake() {
-
+//		for (int i = 0; i < length; i++) {
+//			points[i] = new Point(1, 1);
+//		}
+		
 		add(p1);
 		addKeyListener(new Key());
-		p1.setLayout(new GridLayout(10, 10));
+		p1.setLayout(new GridLayout(fieldSize, fieldSize));
 		p1.setBorder(BorderFactory.createTitledBorder("Panel 1"));
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
@@ -43,8 +97,9 @@ public class Snake extends JFrame {
 			}
 
 		}
+		generateFood();
 
-		fields[x][y].setBackground(Color.BLACK);
+		fields[x][y].setBackground(Color.GREEN);
 		fields[x][y].setOpaque(true);
 
 		setTitle("Snake Game");
@@ -53,7 +108,7 @@ public class Snake extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 
-		Timer t = new Timer(1000, new Action());
+		Timer t = new Timer(400, new Action());
 		t.start();
 
 	}
@@ -66,7 +121,13 @@ public class Snake extends JFrame {
 				fields[y][x].setBackground(Color.WHITE);
 				x += deltaX;
 				y += deltaY;
-				fields[y][x].setBackground(Color.BLACK);
+				fields[y][x].setBackground(Color.GREEN);
+				if (x == foodY && y == foodX) {
+					addPoint(foodX,foodY);
+					generateFood();
+					resize(points);
+				}
+				
 				p1.repaint();
 			} catch (ArrayIndexOutOfBoundsException e1) {
 				JOptionPane.showMessageDialog(null, "Game Over");
@@ -127,38 +188,42 @@ public class Snake extends JFrame {
 
 	}
 
-	public class SnakeLabel {
-
-		int[] snake = new int[3];
-		int x;
-		int y;
-
-		public SnakeLabel(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-
-		public int getX() {
-			return x;
-		}
-
-		public void setX(int x) {
-			this.x = x;
-		}
-
-		public int getY() {
-			return y;
-		}
-
-		public void setY(int y) {
-			this.y = y;
-		}
+	public void generateFood() {
+		foodX = (int) (Math.random() * fieldSize);
+		foodY = (int) (Math.random() * fieldSize);
+		fields[foodX][foodY].setBackground(Color.RED);
 
 	}
+	
+
+	public void addPoint(int foodX, int foodY) {
+
+		for (int i = 0; i < length; i++) {
+			points[i] = new Point(foodX, foodY);
+		}
+		if (length == points.length) {
+			resize(points);
+		}
+	}
+
+	public int getLength() {
+		return length;
+	}
+
+
+	public void resize(Point[] points) {
+		Point[] temp = new Point[points.length + 1];
+		for (int i = 0; i < points.length; i++) {
+			fields[points[i].getX()][points[i].getY()].setBackground(Color.GREEN);;
+			temp[i] = points[i];
+		}
+		points = temp;
+	}
+	
+
 
 	public static void main(String[] args) {
 		new Snake();
 
 	}
-
 }
